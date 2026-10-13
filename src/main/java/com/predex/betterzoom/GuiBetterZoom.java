@@ -16,7 +16,6 @@ public class GuiBetterZoom extends GuiScreen {
     private static final int ROW_HEIGHT = 29;
     private int rowHeight() { return w < 360 ? 44 : ROW_HEIGHT; }
     private int x, y, w, h, scrollOffset;
-    private int activeTab = 0;
     private boolean waitingForKey = false;
     private int waitingTarget = 0;
     private GuiTextField profileField;
@@ -50,62 +49,47 @@ public class GuiBetterZoom extends GuiScreen {
 
     private List<SettingRow> rowsForTab() {
         List<SettingRow> rows = new ArrayList<SettingRow>();
-        if (activeTab == 0) {
-            rows.add(new SettingRow("zoom","Current zoom level","Current magnification. Use quick presets or + / −.","step",2F,BetterZoom.maxZoomFactor,0.5F));
-            rows.add(new SettingRow("max","Maximum zoom limit","The zoom level cannot exceed this value. Range: 2x to 32x.","step",2F,32F,2F));
-            rows.add(new SettingRow("presets","Quick zoom presets","Apply 2x, 4x, 8x or 16x immediately.","presets",0,0,0));
-            rows.add(new SettingRow("smooth","Smooth zoom animation","Turn animation off for reduced motion and instant zoom.","toggle",0,0,0));
-            rows.add(new SettingRow("speed","Animation speed","Higher values make zoom transitions faster.","step",0.05F,1F,0.05F));
-            rows.add(new SettingRow("scroll","Mouse-wheel zoom","Allow the wheel to adjust zoom while zoom is active.","toggle",0,0,0));
-            rows.add(new SettingRow("step","Zoom change per step","How much wheel or zoom-up/down keys change magnification.","step",0.1F,4F,0.1F));
-        } else if (activeTab == 1) {
-            rows.add(new SettingRow("hold","Zoom key behavior","Hold mode requires holding the key; toggle mode switches zoom on/off.","togglemode",0,0,0));
-            rows.add(new SettingRow("keyzoom","Zoom key","Click the button and press a key. Backspace unbinds; Escape cancels.","key1",0,0,0));
-            rows.add(new SettingRow("keysettings","Open settings","Shortcut to open this settings menu.","key2",0,0,0));
-            rows.add(new SettingRow("keyin","Increase zoom","Increase zoom by one configured step.","key3",0,0,0));
-            rows.add(new SettingRow("keyout","Decrease zoom","Decrease zoom by one configured step.","key4",0,0,0));
-            rows.add(new SettingRow("keyreset","Reset zoom level","Return to the default 4x zoom level.","key5",0,0,0));
-            rows.add(new SettingRow("invert","Invert wheel direction","Reverse the direction used to increase/decrease zoom.","toggle",0,0,0));
-        } else {
-            rows.add(new SettingRow("sensitivity","Reduced mouse sensitivity","Reduce mouse sensitivity while zooming.","toggle",0,0,0));
-            rows.add(new SettingRow("multiplier","Sensitivity multiplier","Lower values make camera movement slower while zoomed.","step",0.05F,1F,0.05F));
-            rows.add(new SettingRow("hud","In-game zoom indicator","Show the current zoom level while zoom is active.","toggle",0,0,0));
-            rows.add(new SettingRow("corner","HUD position","Cycle indicator position through four screen corners.","corner",0,3,1));
-            rows.add(new SettingRow("profileName","Profile name","Use letters, numbers, underscore or hyphen (up to 32 characters).","profileName",0,0,0));
-            rows.add(new SettingRow("profileSave","Save named profile","Save current settings to a named profile file.","profileSave",0,0,0));
-            rows.add(new SettingRow("profileLoad","Load named profile","Validate and back up current settings before loading.","profileLoad",0,0,0));
-            rows.add(new SettingRow("profileDelete","Delete named profile","Delete the named profile file.","profileDelete",0,0,0));
-            rows.add(new SettingRow("export","Export current profile","Writes settings to config/betterzoom-export.cfg.","export",0,0,0));
-            rows.add(new SettingRow("import","Import profile","Validate config/betterzoom-import.cfg and back up current settings first.","import",0,0,0));
-            rows.add(new SettingRow("recover","Recover backup","Restore settings from config/betterzoom-backup.cfg.","recover",0,0,0));
-            rows.add(new SettingRow("defaults","Restore all defaults","Reset settings and all five keyboard shortcuts.","defaults",0,0,0));
-        }
-        String query = "";
-        if (query.length() == 0) return rows;
-        List<SettingRow> filtered = new ArrayList<SettingRow>();
-        for (SettingRow row : rows)
-            if (row.label.toLowerCase(java.util.Locale.ROOT).contains(query)
-                || row.description.toLowerCase(java.util.Locale.ROOT).contains(query)) filtered.add(row);
-        return filtered;
+        rows.add(new SettingRow("zoom","Current zoom level","Current magnification. Use quick presets or + / −.","step",2F,BetterZoom.maxZoomFactor,0.5F));
+        rows.add(new SettingRow("max","Maximum zoom limit","Range: 2x to 32x.","step",2F,32F,2F));
+        rows.add(new SettingRow("presets","Quick zoom presets","Apply 2x, 4x, 8x or 16x.","presets",0,0,0));
+        rows.add(new SettingRow("smooth","Smooth zoom animation","Turn animation off for instant zoom.","toggle",0,0,0));
+        rows.add(new SettingRow("speed","Animation speed","Higher values make transitions faster.","step",0.05F,1F,0.05F));
+        rows.add(new SettingRow("scroll","Mouse-wheel zoom","Allow the wheel to adjust zoom while zoom is active.","toggle",0,0,0));
+        rows.add(new SettingRow("step","Zoom change per step","Wheel and zoom-up/down key step size.","step",0.1F,4F,0.1F));
+        rows.add(new SettingRow("hold","Zoom key behavior","Choose hold or toggle mode.","togglemode",0,0,0));
+        rows.add(new SettingRow("keyzoom","Zoom key","Click and press a key. Backspace unbinds; Escape cancels.","key1",0,0,0));
+        rows.add(new SettingRow("keysettings","Open settings","Shortcut to open settings.","key2",0,0,0));
+        rows.add(new SettingRow("keyin","Increase zoom","Increase magnification by one step.","key3",0,0,0));
+        rows.add(new SettingRow("keyout","Decrease zoom","Decrease magnification by one step.","key4",0,0,0));
+        rows.add(new SettingRow("keyreset","Reset zoom level","Return to default zoom level.","key5",0,0,0));
+        rows.add(new SettingRow("invert","Invert wheel direction","Reverse zoom wheel direction.","toggle",0,0,0));
+        rows.add(new SettingRow("sensitivity","Reduced mouse sensitivity","Reduce sensitivity while zooming.","toggle",0,0,0));
+        rows.add(new SettingRow("multiplier","Sensitivity multiplier","Lower values slow camera movement while zoomed.","step",0.05F,1F,0.05F));
+        rows.add(new SettingRow("hud","In-game zoom indicator","Show zoom level while zoom is active.","toggle",0,0,0));
+        rows.add(new SettingRow("corner","HUD position","Cycle through four screen corners.","corner",0,3,1));
+        rows.add(new SettingRow("profileName","Profile name","Letters, numbers, underscore or hyphen; up to 32 characters.","profileName",0,0,0));
+        rows.add(new SettingRow("profileSave","Save named profile","Save current settings to a profile file.","profileSave",0,0,0));
+        rows.add(new SettingRow("profileLoad","Load named profile","Load a saved profile.","profileLoad",0,0,0));
+        rows.add(new SettingRow("profileDelete","Delete named profile","Delete the named profile file.","profileDelete",0,0,0));
+        rows.add(new SettingRow("export","Export current profile","Write settings to config/betterzoom-export.cfg.","export",0,0,0));
+        rows.add(new SettingRow("import","Import profile","Import config/betterzoom-import.cfg.","import",0,0,0));
+        rows.add(new SettingRow("recover","Recover backup","Restore config/betterzoom-backup.cfg.","recover",0,0,0));
+        rows.add(new SettingRow("defaults","Restore all defaults","Reset settings and keyboard shortcuts.","defaults",0,0,0));
+        return rows;
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
-        Gui.drawRect(x-2,y-2,x+w+2,y+h+2,0xFF070B12);
-        Gui.drawRect(x,y,x+w,y+h,0xF0182234);
-        Gui.drawRect(x,y,x+w,y+3,0xFF32D9FF);
-        Gui.drawRect(x,y+3,x+4,y+h,0xFF32D9FF);
-        Gui.drawRect(x+w-4,y+3,x+w,y+h,0xFFFF4FBD);
-        drawCenteredString(fontRendererObj,"BETTER ZOOM PRO 2.0.0",width/2,y+7,0xFFFFFFFF);
-        drawCenteredString(fontRendererObj,"LIVE PREVIEW  •  "+String.format(java.util.Locale.ROOT,"%.1fx",BetterZoom.zoomFactor)
-            +"  •  MAX "+String.format(java.util.Locale.ROOT,"%.0fx",BetterZoom.maxZoomFactor),width/2,y+23,0xFF9DB2D1);
-        int tabY=y+47, tabGap=4, tabW=(w-32-tabGap*2)/3;
-        drawTab(x+16,tabY,tabW,"ZOOM",0,mouseX,mouseY);
-        drawTab(x+16+tabW+tabGap,tabY,tabW,"CONTROLS",1,mouseX,mouseY);
-        drawTab(x+16+(tabW+tabGap)*2,tabY,tabW,"ADVANCED",2,mouseX,mouseY);
-        int contentTop=y+75, contentBottom=y+h-46;
-        Gui.drawRect(x+12,contentTop,x+w-12,contentBottom,0xAA0D1522);
+        Gui.drawRect(x-2,y-2,x+w+2,y+h+2,0xFF000000);
+        Gui.drawRect(x,y,x+w,y+h,0xFFC6C6C6);
+        Gui.drawRect(x+2,y+2,x+w-2,y+h-2,0xFF373737);
+        Gui.drawRect(x+4,y+4,x+w-4,y+h-4,0xFF202020);
+        drawCenteredString(fontRendererObj,"Better Zoom Pro 2.0.0",width/2,y+8,0xFFFFFFFF);
+        drawCenteredString(fontRendererObj,"Zoom: "+String.format(java.util.Locale.ROOT,"%.1fx",BetterZoom.zoomFactor)
+            +"    Maximum: "+String.format(java.util.Locale.ROOT,"%.0fx",BetterZoom.maxZoomFactor),width/2,y+20,0xFFCCCCCC);
+        int contentTop=y+36, contentBottom=y+h-43;
+        Gui.drawRect(x+8,contentTop,x+w-8,contentBottom,0xFF101010);
         List<SettingRow> rows=rowsForTab();
         int viewHeight=Math.max(1,contentBottom-contentTop);
         int maxScroll=Math.max(0,rows.size()*rowHeight()-viewHeight);
@@ -114,35 +98,29 @@ public class GuiBetterZoom extends GuiScreen {
         boolean tooltipDrawn=false;
         for(int i=0;i<rows.size();i++){
             SettingRow row=rows.get(i);
-            int rowY=contentTop+4+i*rowHeight()-scrollOffset;
-            if(rowY<contentTop||rowY+rowHeight()-2>contentBottom) continue;
-            if(i%2==0) Gui.drawRect(x+16,rowY,x+w-16,rowY+rowHeight()-2,0x182F4761);
-            int labelWidth = w < 360 ? w - 32 : Math.max(24,controlX-(x+19)-8);
+            int rowY=contentTop+3+i*rowHeight()-scrollOffset;
+            if(rowY<contentTop||rowY+rowHeight()-1>contentBottom) continue;
+            if(i%2==0) Gui.drawRect(x+10,rowY,x+w-10,rowY+rowHeight()-1,0xFF191919);
+            int labelWidth=w<360?w-24:Math.max(24,controlX-(x+16)-8);
             String shortLabel=fontRendererObj.trimStringToWidth(row.label,labelWidth);
-            fontRendererObj.drawString(shortLabel,x+19,rowY+(w < 360 ? 2 : 8),0xFFE6EDF8);
-            int rowControlX = w < 360 ? x + (w - 134) / 2 : controlX;
-            drawRowControl(row,rowControlX,w < 360 ? rowY+13 : rowY,mouseX,mouseY);
-            if(!tooltipDrawn&&mouseX>=x+14&&mouseX<=x+w-14&&mouseY>=rowY&&mouseY<=rowY+rowHeight()-2){
-                drawHoveringText(Arrays.asList(row.description),mouseX,mouseY); tooltipDrawn=true;
+            fontRendererObj.drawString(shortLabel,x+13,rowY+(w<360?2:7),0xFFFFFFFF);
+            int rowControlX=w<360?x+(w-134)/2:controlX;
+            drawRowControl(row,rowControlX,w<360?rowY+13:rowY,mouseX,mouseY);
+            if(!tooltipDrawn&&mouseX>=x+9&&mouseX<=x+w-9&&mouseY>=rowY&&mouseY<rowY+rowHeight()-1){
+                drawHoveringText(Arrays.asList(row.description),mouseX,mouseY);tooltipDrawn=true;
             }
         }
-        if(rows.isEmpty()) drawCenteredString(fontRendererObj,"No matching settings",width/2,contentTop+20,0xFF9DB2D1);
-        if(maxScroll>0) fontRendererObj.drawString("Scroll for more settings",x+18,contentBottom-10,0xFF7187A5);
+        if(maxScroll>0) drawCenteredString(fontRendererObj,"Scroll for more settings",width/2,contentBottom-10,0xFFAAAAAA);
         if(BetterZoom.lastMessage!=null&&!BetterZoom.lastMessage.isEmpty()){
-            String status=fontRendererObj.trimStringToWidth(BetterZoom.lastMessage,w-28);
-            drawCenteredString(fontRendererObj,status,width/2,y+h-48,status.startsWith("Key conflict")?0xFFFFD66B:0xFF9DB2D1);
+            String status=fontRendererObj.trimStringToWidth(BetterZoom.lastMessage,w-24);
+            drawCenteredString(fontRendererObj,status,width/2,y+h-36,status.startsWith("Key conflict")?0xFFFFCC55:0xFFDDDDDD);
         }
-        drawAction(x+16,y+h-34,108,"RESET DEFAULTS",mouseX,mouseY,false);
-        drawAction(x+w-108,y+h-34,92,"DONE",mouseX,mouseY,true);
+        drawAction(x+12,y+h-27,108,"Reset defaults",mouseX,mouseY,false);
+        drawAction(x+w-104,y+h-27,92,"Done",mouseX,mouseY,true);
         super.drawScreen(mouseX,mouseY,partialTicks);
     }
 
-    private void drawTab(int bx,int by,int bw,String label,int tab,int mx,int my){
-        boolean active=activeTab==tab;
-        Gui.drawRect(bx,by,bx+bw,by+22,active?0xFF174B50:(hit(mx,my,bx,by,bw,22)?0xFF304A67:0xFF202F45));
-        Gui.drawRect(bx,by,bx+bw,by+1,active?0xFF32D9FF:0xFF435772);
-        drawCenteredString(fontRendererObj,label,bx+bw/2,by+7,0xFFFFFFFF);
-    }
+    private void drawTab(int bx,int by,int bw,String label,int tab,int mx,int my) { }
 
     private void drawRowControl(SettingRow row,int bx,int by,int mx,int my){
         if("step".equals(row.type)){
@@ -183,21 +161,26 @@ public class GuiBetterZoom extends GuiScreen {
 
     private void drawButton(int bx,int by,int bw,int bh,String label,boolean hovered){drawButton(bx,by,bw,bh,label,hovered,false);}
     private void drawButton(int bx,int by,int bw,int bh,String label,boolean hovered,boolean warning){
-        Gui.drawRect(bx,by,bx+bw,by+bh,hovered?0xFF304A67:0xFF202F45);
-        Gui.drawRect(bx,by,bx+bw,by+1,warning?0xFFFFD66B:0xFF32D9FF);
-        drawCenteredString(fontRendererObj,label,bx+bw/2,by+7,0xFFFFFFFF);
+        int fill=hovered?0xFF6B6B6B:0xFF555555;
+        int top=hovered?0xFFFFFFFF:0xFFB8B8B8;
+        int bottom=hovered?0xFFB8B8B8:0xFF252525;
+        Gui.drawRect(bx,by,bx+bw,by+bh,fill);
+        Gui.drawRect(bx,by,bx+bw,by+1,warning?0xFFFFCC55:top);
+        Gui.drawRect(bx,by,bx+1,by+bh,bottom);
+        Gui.drawRect(bx,by+bh-1,bx+bw,by+bh,0xFF252525);
+        drawCenteredString(fontRendererObj,label,bx+bw/2,by+(bh-8)/2,0xFFFFFFFF);
     }
     private void drawValue(int bx,int by,int bw,String label,int mx,int my){
-        Gui.drawRect(bx,by,bx+bw,by+21,hit(mx,my,bx,by,bw,21)?0xFF304A67:0xFF182538);
-        Gui.drawRect(bx,by,bx+bw,by+1,0xFF435772);
+        int fill=hit(mx,my,bx,by,bw,21)?0xFF4B4B4B:0xFF303030;
+        Gui.drawRect(bx,by,bx+bw,by+21,fill);
+        Gui.drawRect(bx,by,bx+bw,by+1,0xFF777777);
+        Gui.drawRect(bx,by,bx+1,by+21,0xFF777777);
         drawCenteredString(fontRendererObj,label,bx+bw/2,by+7,0xFFFFFFFF);
     }
     private void drawAction(int bx,int by,int bw,String label,int mx,int my,boolean primary){
-        boolean hovered=hit(mx,my,bx,by,bw,22);
-        Gui.drawRect(bx,by,bx+bw,by+22,hovered?0xFF304A67:(primary?0xFF174B50:0xFF202F45));
-        Gui.drawRect(bx,by,bx+bw,by+1,primary?0xFF32D9FF:0xFFFF4FBD);
-        drawCenteredString(fontRendererObj,label,bx+bw/2,by+7,0xFFFFFFFF);
+        drawButton(bx,by,bw,22,label,hit(mx,my,bx,by,bw,22));
     }
+
     private String keyName(KeyBinding key){
         if(key==null||key.getKeyCode()==Keyboard.KEY_NONE)return "UNBOUND";
         String name=Keyboard.getKeyName(key.getKeyCode());return name==null?"UNBOUND":name;
@@ -226,19 +209,15 @@ public class GuiBetterZoom extends GuiScreen {
     @Override
     protected void mouseClicked(int mouseX,int mouseY,int mouseButton)throws IOException{
         if(mouseButton!=0){super.mouseClicked(mouseX,mouseY,mouseButton);return;}
-        if(activeTab==2) profileField.mouseClicked(mouseX,mouseY,mouseButton);
-        int tabY=y+47,tabGap=4,tabW=(w-32-tabGap*2)/3;
-        if(hit(mouseX,mouseY,x+16,tabY,tabW,22)){activeTab=0;scrollOffset=0;return;}
-        if(hit(mouseX,mouseY,x+16+tabW+tabGap,tabY,tabW,22)){activeTab=1;scrollOffset=0;return;}
-        if(hit(mouseX,mouseY,x+16+(tabW+tabGap)*2,tabY,tabW,22)){activeTab=2;scrollOffset=0;return;}
-        if(hit(mouseX,mouseY,x+16,y+h-34,108,22)){BetterZoom.resetDefaults();scrollOffset=0;return;}
-        if(hit(mouseX,mouseY,x+w-108,y+h-34,92,22)){BetterZoom.saveConfig();mc.displayGuiScreen(null);return;}
-        int contentTop=y+75,contentBottom=y+h-46;
+        profileField.mouseClicked(mouseX,mouseY,mouseButton);
+        if(hit(mouseX,mouseY,x+12,y+h-27,108,22)){BetterZoom.resetDefaults();scrollOffset=0;return;}
+        if(hit(mouseX,mouseY,x+w-104,y+h-27,92,22)){BetterZoom.saveConfig();mc.displayGuiScreen(null);return;}
+        int contentTop=y+36,contentBottom=y+h-43;
         if(mouseY<contentTop||mouseY>=contentBottom)return;
         List<SettingRow> rows=rowsForTab();
-        int index=(mouseY-contentTop-4+scrollOffset)/rowHeight();
+        int index=(mouseY-contentTop-3+scrollOffset)/rowHeight();
         if(index<0||index>=rows.size())return;
-        SettingRow row=rows.get(index);int rowY=contentTop+4+index*rowHeight()-scrollOffset;int bx=w < 360 ? x + (w - 134) / 2 : x+w-146;int controlY=rowY+(w < 360 ? 13 : 0);
+        SettingRow row=rows.get(index);int rowY=contentTop+3+index*rowHeight()-scrollOffset;int bx=w < 360 ? x + (w - 134) / 2 : x+w-146;int controlY=rowY+(w < 360 ? 13 : 0);
         if(mouseY<rowY||mouseY>rowY+rowHeight()-2)return;
         if("step".equals(row.type)){
             if(hit(mouseX,mouseY,bx,controlY+2,25,21))changeStep(row.id,-row.step);
@@ -290,11 +269,7 @@ public class GuiBetterZoom extends GuiScreen {
             waitingForKey=false;waitingTarget=0;return;
         }
         if(keyCode==Keyboard.KEY_ESCAPE){BetterZoom.saveConfig();mc.displayGuiScreen(null);return;}
-        if(keyCode==Keyboard.KEY_TAB){
-            if(activeTab==2) profileField.setFocused(!profileField.isFocused());
-            return;
-        }
-        if(activeTab==2&&profileField.isFocused()){profileField.textboxKeyTyped(typedChar,keyCode);return;}
+        if(profileField.isFocused()){profileField.textboxKeyTyped(typedChar,keyCode);return;}
         super.keyTyped(typedChar,keyCode);
     }
 
@@ -304,7 +279,7 @@ public class GuiBetterZoom extends GuiScreen {
             int mouseX=Mouse.getEventX()*width/mc.displayWidth;
             int mouseY=height-Mouse.getEventY()*height/mc.displayHeight-1;
             int wheel=Mouse.getEventDWheel();
-            int contentTop=y+75,contentBottom=y+h-46;
+            int contentTop=y+36,contentBottom=y+h-43;
             if(wheel!=0&&hit(mouseX,mouseY,x+12,contentTop,w-24,Math.max(1,contentBottom-contentTop))){
                 scrollOffset+=wheel>0?-rowHeight():rowHeight();
                 int maxScroll=Math.max(0,rowsForTab().size()*rowHeight()-(contentBottom-contentTop));

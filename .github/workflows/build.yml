@@ -1,4 +1,4 @@
-name: Build Better Zoom
+name: Build Better Zoom Pro
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: BetterZoom-1.2.0
+          name: BetterZoom-Pro-2.0.0
           path: build/libs/*.jar
           if-no-files-found: error
           retention-days: 14

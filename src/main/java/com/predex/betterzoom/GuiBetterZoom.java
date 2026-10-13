@@ -18,7 +18,7 @@ public class GuiBetterZoom extends GuiScreen {
     private int activeTab = 0;
     private boolean waitingForKey = false;
     private int waitingTarget = 0;
-    private GuiTextField searchField, profileField;
+    private GuiTextField profileField;
 
     private static class SettingRow {
         final String id, label, description, type;
@@ -31,14 +31,11 @@ public class GuiBetterZoom extends GuiScreen {
 
     @Override
     public void initGui() {
-        w = Math.min(500, Math.max(280, width - 16));
-        h = Math.min(560, Math.max(230, height - 16));
+        w = Math.min(520, Math.max(220, width - 12));
+        h = Math.min(500, Math.max(170, height - 12));
         x = (width - w) / 2; y = (height - h) / 2;
         scrollOffset = Math.max(0, scrollOffset);
         Keyboard.enableRepeatEvents(true);
-        searchField = new GuiTextField(0, fontRendererObj, x + 16, y + 49, w - 32, 18);
-        searchField.setMaxStringLength(48);
-        searchField.setFocused(false);
         profileField = new GuiTextField(1, fontRendererObj, x + w - 168, y + 140, 132, 20);
         profileField.setMaxStringLength(32);
         profileField.setText("default");
@@ -82,7 +79,7 @@ public class GuiBetterZoom extends GuiScreen {
             rows.add(new SettingRow("recover","Recover backup","Restore settings from config/betterzoom-backup.cfg.","recover",0,0,0));
             rows.add(new SettingRow("defaults","Restore all defaults","Reset settings and all five keyboard shortcuts.","defaults",0,0,0));
         }
-        String query = searchField == null ? "" : searchField.getText().trim().toLowerCase(java.util.Locale.ROOT);
+        String query = "";
         if (query.length() == 0) return rows;
         List<SettingRow> filtered = new ArrayList<SettingRow>();
         for (SettingRow row : rows)
@@ -99,21 +96,20 @@ public class GuiBetterZoom extends GuiScreen {
         Gui.drawRect(x,y,x+w,y+3,0xFF32D9FF);
         Gui.drawRect(x,y+3,x+4,y+h,0xFF32D9FF);
         Gui.drawRect(x+w-4,y+3,x+w,y+h,0xFFFF4FBD);
-        drawCenteredString(fontRendererObj,"BETTER ZOOM PRO 2.0.0",width/2,y+10,0xFFFFFFFF);
+        drawCenteredString(fontRendererObj,"BETTER ZOOM PRO 2.0.0",width/2,y+7,0xFFFFFFFF);
         drawCenteredString(fontRendererObj,"LIVE PREVIEW  •  "+String.format(java.util.Locale.ROOT,"%.1fx",BetterZoom.zoomFactor)
-            +"  •  MAX "+String.format(java.util.Locale.ROOT,"%.0fx",BetterZoom.maxZoomFactor),width/2,y+27,0xFF9DB2D1);
-        searchField.drawTextBox();
-        int tabY=y+73, tabGap=4, tabW=(w-32-tabGap*2)/3;
+            +"  •  MAX "+String.format(java.util.Locale.ROOT,"%.0fx",BetterZoom.maxZoomFactor),width/2,y+23,0xFF9DB2D1);
+        int tabY=y+47, tabGap=4, tabW=(w-32-tabGap*2)/3;
         drawTab(x+16,tabY,tabW,"ZOOM",0,mouseX,mouseY);
         drawTab(x+16+tabW+tabGap,tabY,tabW,"CONTROLS",1,mouseX,mouseY);
         drawTab(x+16+(tabW+tabGap)*2,tabY,tabW,"ADVANCED",2,mouseX,mouseY);
-        int contentTop=y+101, contentBottom=y+h-55;
+        int contentTop=y+75, contentBottom=y+h-46;
         Gui.drawRect(x+12,contentTop,x+w-12,contentBottom,0xAA0D1522);
         List<SettingRow> rows=rowsForTab();
         int viewHeight=Math.max(1,contentBottom-contentTop);
         int maxScroll=Math.max(0,rows.size()*ROW_HEIGHT-viewHeight);
         scrollOffset=Math.max(0,Math.min(scrollOffset,maxScroll));
-        int controlX=x+w-170;
+        int controlX=x+w-146;
         boolean tooltipDrawn=false;
         for(int i=0;i<rows.size();i++){
             SettingRow row=rows.get(i);
@@ -227,20 +223,19 @@ public class GuiBetterZoom extends GuiScreen {
     @Override
     protected void mouseClicked(int mouseX,int mouseY,int mouseButton)throws IOException{
         if(mouseButton!=0){super.mouseClicked(mouseX,mouseY,mouseButton);return;}
-        searchField.mouseClicked(mouseX,mouseY,mouseButton);
         if(activeTab==2) profileField.mouseClicked(mouseX,mouseY,mouseButton);
-        int tabY=y+73,tabGap=4,tabW=(w-32-tabGap*2)/3;
-        if(hit(mouseX,mouseY,x+16,tabY,tabW,22)){activeTab=0;scrollOffset=0;searchField.setFocused(false);return;}
-        if(hit(mouseX,mouseY,x+16+tabW+tabGap,tabY,tabW,22)){activeTab=1;scrollOffset=0;searchField.setFocused(false);return;}
-        if(hit(mouseX,mouseY,x+16+(tabW+tabGap)*2,tabY,tabW,22)){activeTab=2;scrollOffset=0;searchField.setFocused(false);return;}
+        int tabY=y+47,tabGap=4,tabW=(w-32-tabGap*2)/3;
+        if(hit(mouseX,mouseY,x+16,tabY,tabW,22)){activeTab=0;scrollOffset=0;return;}
+        if(hit(mouseX,mouseY,x+16+tabW+tabGap,tabY,tabW,22)){activeTab=1;scrollOffset=0;return;}
+        if(hit(mouseX,mouseY,x+16+(tabW+tabGap)*2,tabY,tabW,22)){activeTab=2;scrollOffset=0;return;}
         if(hit(mouseX,mouseY,x+16,y+h-34,108,22)){BetterZoom.resetDefaults();scrollOffset=0;return;}
         if(hit(mouseX,mouseY,x+w-108,y+h-34,92,22)){BetterZoom.saveConfig();mc.displayGuiScreen(null);return;}
-        int contentTop=y+101,contentBottom=y+h-55;
+        int contentTop=y+75,contentBottom=y+h-46;
         if(mouseY<contentTop||mouseY>=contentBottom)return;
         List<SettingRow> rows=rowsForTab();
         int index=(mouseY-contentTop-4+scrollOffset)/ROW_HEIGHT;
         if(index<0||index>=rows.size())return;
-        SettingRow row=rows.get(index);int rowY=contentTop+4+index*ROW_HEIGHT-scrollOffset;int bx=x+w-170;
+        SettingRow row=rows.get(index);int rowY=contentTop+4+index*ROW_HEIGHT-scrollOffset;int bx=x+w-146;
         if(mouseY<rowY||mouseY>rowY+25)return;
         if("step".equals(row.type)){
             if(hit(mouseX,mouseY,bx,rowY+2,25,21))changeStep(row.id,-row.step);
@@ -293,13 +288,10 @@ public class GuiBetterZoom extends GuiScreen {
         }
         if(keyCode==Keyboard.KEY_ESCAPE){BetterZoom.saveConfig();mc.displayGuiScreen(null);return;}
         if(keyCode==Keyboard.KEY_TAB){
-            if(activeTab==2&&profileField.isFocused()){profileField.setFocused(false);searchField.setFocused(true);}
-            else if(activeTab==2&&searchField.isFocused()){searchField.setFocused(false);profileField.setFocused(true);}
-            else searchField.setFocused(!searchField.isFocused());
+            if(activeTab==2) profileField.setFocused(!profileField.isFocused());
             return;
         }
         if(activeTab==2&&profileField.isFocused()){profileField.textboxKeyTyped(typedChar,keyCode);return;}
-        searchField.textboxKeyTyped(typedChar,keyCode);
         super.keyTyped(typedChar,keyCode);
     }
 
@@ -309,7 +301,7 @@ public class GuiBetterZoom extends GuiScreen {
             int mouseX=Mouse.getEventX()*width/mc.displayWidth;
             int mouseY=height-Mouse.getEventY()*height/mc.displayHeight-1;
             int wheel=Mouse.getEventDWheel();
-            int contentTop=y+101,contentBottom=y+h-55;
+            int contentTop=y+75,contentBottom=y+h-46;
             if(wheel!=0&&hit(mouseX,mouseY,x+12,contentTop,w-24,Math.max(1,contentBottom-contentTop))){
                 scrollOffset+=wheel>0?-ROW_HEIGHT:ROW_HEIGHT;
                 int maxScroll=Math.max(0,rowsForTab().size()*ROW_HEIGHT-(contentBottom-contentTop));

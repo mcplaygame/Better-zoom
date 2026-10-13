@@ -14,6 +14,7 @@ import org.lwjgl.input.Mouse;
 
 public class GuiBetterZoom extends GuiScreen {
     private static final int ROW_HEIGHT = 29;
+    private int rowHeight() { return w < 360 ? 44 : ROW_HEIGHT; }
     private int x, y, w, h, scrollOffset;
     private int activeTab = 0;
     private boolean waitingForKey = false;
@@ -107,19 +108,21 @@ public class GuiBetterZoom extends GuiScreen {
         Gui.drawRect(x+12,contentTop,x+w-12,contentBottom,0xAA0D1522);
         List<SettingRow> rows=rowsForTab();
         int viewHeight=Math.max(1,contentBottom-contentTop);
-        int maxScroll=Math.max(0,rows.size()*ROW_HEIGHT-viewHeight);
+        int maxScroll=Math.max(0,rows.size()*rowHeight()-viewHeight);
         scrollOffset=Math.max(0,Math.min(scrollOffset,maxScroll));
         int controlX=x+w-146;
         boolean tooltipDrawn=false;
         for(int i=0;i<rows.size();i++){
             SettingRow row=rows.get(i);
-            int rowY=contentTop+4+i*ROW_HEIGHT-scrollOffset;
-            if(rowY<contentTop||rowY+24>contentBottom) continue;
-            if(i%2==0) Gui.drawRect(x+16,rowY,x+w-16,rowY+25,0x182F4761);
-            String shortLabel=fontRendererObj.trimStringToWidth(row.label,Math.max(24,controlX-(x+19)-8));
-            fontRendererObj.drawString(shortLabel,x+19,rowY+8,0xFFE6EDF8);
-            drawRowControl(row,controlX,rowY,mouseX,mouseY);
-            if(!tooltipDrawn&&mouseX>=x+14&&mouseX<=x+w-14&&mouseY>=rowY&&mouseY<=rowY+25){
+            int rowY=contentTop+4+i*rowHeight()-scrollOffset;
+            if(rowY<contentTop||rowY+rowHeight()-2>contentBottom) continue;
+            if(i%2==0) Gui.drawRect(x+16,rowY,x+w-16,rowY+rowHeight()-2,0x182F4761);
+            int labelWidth = w < 360 ? w - 32 : Math.max(24,controlX-(x+19)-8);
+            String shortLabel=fontRendererObj.trimStringToWidth(row.label,labelWidth);
+            fontRendererObj.drawString(shortLabel,x+19,rowY+(w < 360 ? 2 : 8),0xFFE6EDF8);
+            int rowControlX = w < 360 ? x + (w - 134) / 2 : controlX;
+            drawRowControl(row,rowControlX,w < 360 ? rowY+13 : rowY,mouseX,mouseY);
+            if(!tooltipDrawn&&mouseX>=x+14&&mouseX<=x+w-14&&mouseY>=rowY&&mouseY<=rowY+rowHeight()-2){
                 drawHoveringText(Arrays.asList(row.description),mouseX,mouseY); tooltipDrawn=true;
             }
         }
@@ -233,10 +236,10 @@ public class GuiBetterZoom extends GuiScreen {
         int contentTop=y+75,contentBottom=y+h-46;
         if(mouseY<contentTop||mouseY>=contentBottom)return;
         List<SettingRow> rows=rowsForTab();
-        int index=(mouseY-contentTop-4+scrollOffset)/ROW_HEIGHT;
+        int index=(mouseY-contentTop-4+scrollOffset)/rowHeight();
         if(index<0||index>=rows.size())return;
-        SettingRow row=rows.get(index);int rowY=contentTop+4+index*ROW_HEIGHT-scrollOffset;int bx=x+w-146;
-        if(mouseY<rowY||mouseY>rowY+25)return;
+        SettingRow row=rows.get(index);int rowY=contentTop+4+index*rowHeight()-scrollOffset;int bx=w < 360 ? x + (w - 134) / 2 : x+w-146;
+        if(mouseY<rowY||mouseY>rowY+rowHeight()-2)return;
         if("step".equals(row.type)){
             if(hit(mouseX,mouseY,bx,rowY+2,25,21))changeStep(row.id,-row.step);
             else if(hit(mouseX,mouseY,bx+109,rowY+2,25,21))changeStep(row.id,row.step);
@@ -303,8 +306,8 @@ public class GuiBetterZoom extends GuiScreen {
             int wheel=Mouse.getEventDWheel();
             int contentTop=y+75,contentBottom=y+h-46;
             if(wheel!=0&&hit(mouseX,mouseY,x+12,contentTop,w-24,Math.max(1,contentBottom-contentTop))){
-                scrollOffset+=wheel>0?-ROW_HEIGHT:ROW_HEIGHT;
-                int maxScroll=Math.max(0,rowsForTab().size()*ROW_HEIGHT-(contentBottom-contentTop));
+                scrollOffset+=wheel>0?-rowHeight():rowHeight();
+                int maxScroll=Math.max(0,rowsForTab().size()*rowHeight()-(contentBottom-contentTop));
                 scrollOffset=Math.max(0,Math.min(scrollOffset,maxScroll));
             }
             int button=Mouse.getEventButton();

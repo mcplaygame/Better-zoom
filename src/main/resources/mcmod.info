@@ -1,10 +1,10 @@
 [
   {
     "modid": "betterzoom",
-    "name": "Better Zoom",
-    "description": "Customizable zoom, smooth animation, mouse wheel controls, and an easy settings menu for Minecraft 1.8.9.",
-    "version": "${version}",
-    "mcversion": "${mcversion}",
+    "name": "Better Zoom Pro",
+    "description": "Customizable zoom presets, hold/toggle controls, smooth animation, mouse sensitivity controls, and responsive settings for Minecraft 1.8.9.",
+    "version": "${'version'}",
+    "mcversion": "${'mcversion'}",
     "url": "https://github.com/mcplaygame/Better-zoom",
     "updateUrl": "",
     "authorList": ["Predex"],

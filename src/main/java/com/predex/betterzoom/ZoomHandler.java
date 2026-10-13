@@ -80,7 +80,7 @@ public class ZoomHandler {
     public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL || !BetterZoom.showZoomIndicator || zoomProgress <= 0.02F) return;
         if (mc.fontRendererObj == null) return;
-        String label = String.format(java.util.Locale.ROOT, "ZOOM %.1fx", 1.0F + (BetterZoom.zoomFactor - 1.0F) * zoomProgress);
+        String label = String.format(java.util.Locale.ROOT, "ZOOM %.1fx", 1.0F + (animatedZoomFactor - 1.0F) * zoomProgress);
         int padding = 6;
         int boxWidth = mc.fontRendererObj.getStringWidth(label) + padding * 2;
         int boxHeight = 18;

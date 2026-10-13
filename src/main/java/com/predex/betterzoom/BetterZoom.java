@@ -2,6 +2,7 @@ package com.predex.betterzoom;
 
 import java.io.File;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -24,11 +25,12 @@ import org.lwjgl.input.Keyboard;
 public class BetterZoom {
     public static final String MODID = "betterzoom";
     public static final String NAME = "Better Zoom";
-    public static final String VERSION = "1.1.0";
+    public static final String VERSION = "1.2.0";
 
     public static Configuration CONFIG;
 
     public static float zoomFactor = 4.0F;
+    public static float zoomStep = 0.5F;
     public static float smoothSpeed = 0.22F;
     public static float sensitivityMultiplier = 0.45F;
     public static boolean smoothZoomEnabled = true;
@@ -52,6 +54,7 @@ public class BetterZoom {
         settingsKey = new KeyBinding("key.betterzoom.settings", Keyboard.KEY_V, "key.categories.betterzoom");
         zoomInKey = new KeyBinding("key.betterzoom.zoom_in", Keyboard.KEY_EQUALS, "key.categories.betterzoom");
         zoomOutKey = new KeyBinding("key.betterzoom.zoom_out", Keyboard.KEY_MINUS, "key.categories.betterzoom");
+
         ClientRegistry.registerKeyBinding(zoomKey);
         ClientRegistry.registerKeyBinding(settingsKey);
         ClientRegistry.registerKeyBinding(zoomInKey);
@@ -65,11 +68,12 @@ public class BetterZoom {
 
     public static void loadConfig() {
         CONFIG.load();
-
         zoomFactor = CONFIG.getFloat("zoomFactor", "general", 4.0F, 2.0F, 10.0F,
-            "Zoom multiplier. Scroll wheel or keybinds can adjust it.");
+            "Current zoom multiplier.");
+        zoomStep = CONFIG.getFloat("zoomStep", "general", 0.5F, 0.1F, 2.0F,
+            "How much zoom level changes per key press or mouse-wheel notch.");
         smoothSpeed = CONFIG.getFloat("smoothSpeed", "general", 0.22F, 0.05F, 1.0F,
-            "Zoom transition speed. Higher is faster.");
+            "Smooth transition speed. Higher is faster.");
         sensitivityMultiplier = CONFIG.getFloat("sensitivityMultiplier", "general", 0.45F, 0.05F, 1.0F,
             "Mouse sensitivity multiplier while zooming.");
         smoothZoomEnabled = CONFIG.getBoolean("smoothZoomEnabled", "general", true,
@@ -79,14 +83,13 @@ public class BetterZoom {
         reducedSensitivityEnabled = CONFIG.getBoolean("reducedSensitivityEnabled", "general", true,
             "Reduce mouse sensitivity while zooming.");
 
-        if (CONFIG.hasChanged()) {
-            CONFIG.save();
-        }
+        if (CONFIG.hasChanged()) CONFIG.save();
     }
 
     public static void saveConfig() {
         if (CONFIG == null) return;
         CONFIG.get("general", "zoomFactor", 4.0F).set(zoomFactor);
+        CONFIG.get("general", "zoomStep", 0.5F).set(zoomStep);
         CONFIG.get("general", "smoothSpeed", 0.22F).set(smoothSpeed);
         CONFIG.get("general", "sensitivityMultiplier", 0.45F).set(sensitivityMultiplier);
         CONFIG.get("general", "smoothZoomEnabled", true).set(smoothZoomEnabled);
@@ -95,9 +98,19 @@ public class BetterZoom {
         CONFIG.save();
     }
 
+    public static void resetKeyBindings() {
+        if (zoomKey == null || settingsKey == null || zoomInKey == null || zoomOutKey == null) return;
+        zoomKey.setKeyCode(Keyboard.KEY_C);
+        settingsKey.setKeyCode(Keyboard.KEY_V);
+        zoomInKey.setKeyCode(Keyboard.KEY_EQUALS);
+        zoomOutKey.setKeyCode(Keyboard.KEY_MINUS);
+        KeyBinding.resetKeyBindingArrayAndHash();
+        Minecraft.getMinecraft().gameSettings.saveOptions();
+    }
+
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
-        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getMinecraft();
+        Minecraft mc = Minecraft.getMinecraft();
         if (settingsKey != null && settingsKey.isPressed() && mc.currentScreen == null) {
             mc.displayGuiScreen(new GuiBetterZoom());
         }

@@ -2,45 +2,60 @@
 
 **A configurable client-side zoom mod for Minecraft Java Edition 1.8.9 (Forge).**
 
-Better Zoom adds smooth hold-to-zoom, adjustable zoom strength, mouse-wheel control, customizable keyboard shortcuts, and a compact dark settings screen with cyan and magenta accents.
+Better Zoom provides hold-to-zoom, smooth animation, mouse-wheel adjustment, separate zoom-up/down shortcuts, and a compact dark settings screen with cyan and magenta accents.
 
-> **Project status:** Source code is available; the mod has not yet been verified with a successful build or live Minecraft test. Contributions and testing reports are welcome.
+> **Project status:** The source has been pushed to GitHub, but this revision has not yet been compiled or tested in a live Minecraft client. Please test in a separate Forge 1.8.9 profile and report any build errors or crashes.
 
 ## Features
 
-- **Hold to Zoom** — hold `C` by default.
-- **Settings menu** — press `V` by default.
-- **Zoom level up/down** — press `=` or `-` by default.
-- **Mouse-wheel adjustment** — adjust zoom strength while zooming; toggle this in settings.
-- **Smooth zoom** — enable or disable animated zoom transitions.
-- **Reduced mouse sensitivity** — optionally lower sensitivity while zooming.
-- **Custom settings GUI** — change zoom strength, sensitivity, toggles, and keybinds.
-- **Minecraft Controls integration** — keybinds also appear under `Options → Controls`.
-- **Persistent settings** — configuration is saved to `config/betterzoom.cfg`.
+- **Hold to Zoom** — default `C`.
+- **Open settings** — default `V`.
+- **Increase zoom level** — default `=`.
+- **Decrease zoom level** — default `-`.
+- **Mouse-wheel zoom** — optionally change zoom strength with the wheel while zooming.
+- **Smooth zoom animation** — toggle it and adjust its speed.
+- **Adjustable zoom step** — choose how much the wheel or zoom-up/down keys change the zoom.
+- **Reduced mouse sensitivity** — toggle it and adjust the sensitivity multiplier.
+- **Friendly settings GUI** — simple ON/OFF controls, plus/minus steppers, key rebinding, Reset Defaults, and Done.
+- **Controls menu integration** — keybinds also appear under `Options → Controls`.
+- **Saved settings** — values are written to `config/betterzoom.cfg`.
 
 ## Default controls
 
-| Action | Default key |
+| Action | Key |
 | --- | --- |
 | Hold to Zoom | `C` |
 | Open Better Zoom Settings | `V` |
 | Increase Zoom Level | `=` |
 | Decrease Zoom Level | `-` |
 
-Change keybinds from the Better Zoom settings screen or from Minecraft's `Options → Controls` menu.
+To change a key, open the Better Zoom menu and click its key field, then press your preferred keyboard key. You can also change the bindings from Minecraft's `Options → Controls`.
+
+## Settings you can change
+
+- Zoom strength: **2.0×–10.0×**
+- Smooth zoom: **on/off**
+- Animation speed: **0.05–1.00**
+- Mouse-wheel zoom adjustment: **on/off**
+- Zoom change per step: **0.1–2.0**
+- Reduced mouse sensitivity: **on/off**
+- Sensitivity multiplier: **5%–100%**
+- All four keyboard shortcuts
+
+Use **Reset Defaults** to restore the original settings and keybinds.
 
 ## Requirements
 
 - Minecraft Java Edition **1.8.9**
 - Minecraft Forge **11.15.1.2318-1.8.9**
 - **Java 8 JDK**
-- The matching Minecraft Forge 1.8.9 MDK
+- Matching Forge 1.8.9 MDK
 
 ## Build on Windows
 
 1. Download the matching Forge 1.8.9 MDK.
-2. Copy `gradlew`, `gradlew.bat`, and the full `gradle/wrapper/` directory from the MDK into this repository's root folder.
-3. Open Command Prompt or PowerShell in the project directory.
+2. Copy `gradlew`, `gradlew.bat`, and the full `gradle/wrapper/` directory from the MDK into the repository root.
+3. Open Command Prompt or PowerShell in the project folder.
 4. Run:
 
    ```bat
@@ -48,20 +63,10 @@ Change keybinds from the Better Zoom settings screen or from Minecraft's `Option
    gradlew.bat build
    ```
 
-5. If the build succeeds, find the mod JAR in `build/libs/`.
+5. If the build succeeds, the JAR should appear in `build/libs/`.
 6. Test it in a separate Minecraft 1.8.9 Forge profile before using it in your main game.
 
-## Configuration
-
-The mod writes settings to `config/betterzoom.cfg`. The in-game menu lets you adjust:
-
-- Zoom multiplier
-- Smooth zoom
-- Mouse-wheel zoom adjustment
-- Reduced mouse sensitivity and its multiplier
-- Zoom, settings, zoom-in, and zoom-out keybinds
-
-## Repository layout
+## Project structure
 
 ```
 src/main/java/com/predex/betterzoom/
@@ -78,8 +83,8 @@ gradle.properties
 
 ## License
 
-No license has been specified yet. Until a license is added, please ask the repository owner before redistributing modified or unmodified copies.
+No license has been specified yet. Please ask the repository owner before redistributing the code.
 
 ## Contributing
 
-Bug reports, compatibility notes, and pull requests are welcome. Please include your Minecraft version, Forge version, Java version, and relevant crash-log details when reporting a problem.
+Bug reports and pull requests are welcome. When reporting a problem, include your Minecraft version, Forge version, Java version, and relevant crash-log details.

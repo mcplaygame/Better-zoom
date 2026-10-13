@@ -26,6 +26,12 @@ jobs:
         with:
           gradle-version: '4.10.3'
 
+      - name: Enforce pinned version 2.0.0
+        run: |
+          grep -F 'VERSION = "2.0.0"' src/main/java/com/predex/betterzoom/BetterZoom.java
+          grep -F 'version = "2.0.0"' build.gradle
+          grep -F 'name: BetterZoom-Pro-2.0.0' .github/workflows/build.yml
+
       - name: Build Minecraft Forge 1.8.9 mod
         run: gradle --no-daemon clean build
 

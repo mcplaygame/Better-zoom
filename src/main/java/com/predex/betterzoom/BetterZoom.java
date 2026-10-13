@@ -46,7 +46,7 @@ public class BetterZoom {
     public void preInit(FMLPreInitializationEvent event) {
         configDirectory = event.getModConfigurationDirectory();
         File configFile = new File(configDirectory, "betterzoom.cfg");
-        if (configFile.isFile() && configFile.length() > 0L) {
+        if (validateProfile(configFile)) {
             try {
                 Files.copy(configFile.toPath(), new File(configDirectory, "betterzoom-backup.cfg").toPath(),
                     StandardCopyOption.REPLACE_EXISTING);

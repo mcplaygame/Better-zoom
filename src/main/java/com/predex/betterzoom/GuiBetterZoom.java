@@ -238,30 +238,30 @@ public class GuiBetterZoom extends GuiScreen {
         List<SettingRow> rows=rowsForTab();
         int index=(mouseY-contentTop-4+scrollOffset)/rowHeight();
         if(index<0||index>=rows.size())return;
-        SettingRow row=rows.get(index);int rowY=contentTop+4+index*rowHeight()-scrollOffset;int bx=w < 360 ? x + (w - 134) / 2 : x+w-146;
+        SettingRow row=rows.get(index);int rowY=contentTop+4+index*rowHeight()-scrollOffset;int bx=w < 360 ? x + (w - 134) / 2 : x+w-146;int controlY=rowY+(w < 360 ? 13 : 0);
         if(mouseY<rowY||mouseY>rowY+rowHeight()-2)return;
         if("step".equals(row.type)){
-            if(hit(mouseX,mouseY,bx,rowY+2,25,21))changeStep(row.id,-row.step);
-            else if(hit(mouseX,mouseY,bx+109,rowY+2,25,21))changeStep(row.id,row.step);
+            if(hit(mouseX,mouseY,bx,controlY+2,25,21))changeStep(row.id,-row.step);
+            else if(hit(mouseX,mouseY,bx+109,controlY+2,25,21))changeStep(row.id,row.step);
         }else if("toggle".equals(row.type)){
-            if(hit(mouseX,mouseY,bx+37,rowY+2,96,21))toggle(row.id);
+            if(hit(mouseX,mouseY,bx+37,controlY+2,96,21))toggle(row.id);
         }else if("togglemode".equals(row.type)){
-            if(hit(mouseX,mouseY,bx+37,rowY+2,96,21)){BetterZoom.holdToZoomEnabled=!BetterZoom.holdToZoomEnabled;BetterZoom.zoomToggleState=false;}
+            if(hit(mouseX,mouseY,bx+37,controlY+2,96,21)){BetterZoom.holdToZoomEnabled=!BetterZoom.holdToZoomEnabled;BetterZoom.zoomToggleState=false;}
         }else if(row.type.startsWith("key")){
             int id=Integer.parseInt(row.type.substring(3));
-            if(hit(mouseX,mouseY,bx-4,rowY+2,138,21)){waitingForKey=true;waitingTarget=id;BetterZoom.lastMessage="Press a key. Backspace unbinds; Escape cancels.";}
+            if(hit(mouseX,mouseY,bx-4,controlY+2,138,21)){waitingForKey=true;waitingTarget=id;BetterZoom.lastMessage="Press a key. Backspace unbinds; Escape cancels.";}
         }else if("presets".equals(row.type)){
             int[] levels={2,4,8,16};
-            for(int i=0;i<levels.length;i++){int px=bx+i*34;if(hit(mouseX,mouseY,px,rowY+2,31,21)){BetterZoom.setZoom(levels[i]);BetterZoom.lastMessage="Zoom preset set to "+String.format(java.util.Locale.ROOT,"%.1fx",BetterZoom.zoomFactor);break;}}
+            for(int i=0;i<levels.length;i++){int px=bx+i*34;if(hit(mouseX,mouseY,px,controlY+2,31,21)){BetterZoom.setZoom(levels[i]);BetterZoom.lastMessage="Zoom preset set to "+String.format(java.util.Locale.ROOT,"%.1fx",BetterZoom.zoomFactor);break;}}
         }else if("corner".equals(row.type)){
-            if(hit(mouseX,mouseY,bx+5,rowY+2,128,21)){BetterZoom.indicatorCorner=(BetterZoom.indicatorCorner+1)%4;BetterZoom.saveConfig();}
-        }else if("profileSave".equals(row.type)){if(hit(mouseX,mouseY,bx+27,rowY+2,106,21))BetterZoom.saveProfile(profileField.getText());}
-        else if("profileLoad".equals(row.type)){if(hit(mouseX,mouseY,bx+27,rowY+2,106,21))BetterZoom.loadProfile(profileField.getText());}
-        else if("profileDelete".equals(row.type)){if(hit(mouseX,mouseY,bx+27,rowY+2,106,21))BetterZoom.deleteProfile(profileField.getText());}
-        else if("export".equals(row.type)){if(hit(mouseX,mouseY,bx+27,rowY+2,106,21))BetterZoom.exportConfig();}
-        else if("import".equals(row.type)){if(hit(mouseX,mouseY,bx+27,rowY+2,106,21))BetterZoom.importConfig();}
-        else if("recover".equals(row.type)){if(hit(mouseX,mouseY,bx+27,rowY+2,106,21))BetterZoom.recoverConfigBackup();}
-        else if("defaults".equals(row.type)){if(hit(mouseX,mouseY,bx+27,rowY+2,106,21))BetterZoom.resetDefaults();}
+            if(hit(mouseX,mouseY,bx+5,controlY+2,128,21)){BetterZoom.indicatorCorner=(BetterZoom.indicatorCorner+1)%4;BetterZoom.saveConfig();}
+        }else if("profileSave".equals(row.type)){if(hit(mouseX,mouseY,bx+27,controlY+2,106,21))BetterZoom.saveProfile(profileField.getText());}
+        else if("profileLoad".equals(row.type)){if(hit(mouseX,mouseY,bx+27,controlY+2,106,21))BetterZoom.loadProfile(profileField.getText());}
+        else if("profileDelete".equals(row.type)){if(hit(mouseX,mouseY,bx+27,controlY+2,106,21))BetterZoom.deleteProfile(profileField.getText());}
+        else if("export".equals(row.type)){if(hit(mouseX,mouseY,bx+27,controlY+2,106,21))BetterZoom.exportConfig();}
+        else if("import".equals(row.type)){if(hit(mouseX,mouseY,bx+27,controlY+2,106,21))BetterZoom.importConfig();}
+        else if("recover".equals(row.type)){if(hit(mouseX,mouseY,bx+27,controlY+2,106,21))BetterZoom.recoverConfigBackup();}
+        else if("defaults".equals(row.type)){if(hit(mouseX,mouseY,bx+27,controlY+2,106,21))BetterZoom.resetDefaults();}
         BetterZoom.clampZoom();BetterZoom.saveConfig();
     }
 

@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "betterzoom",
+    "name": "Better Zoom",
+    "description": "A lightweight configurable zoom mod for Minecraft 1.8.9 Forge.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://github.com/mcplaygame/Better-zoom",
+    "updateUrl": "",
+    "authorList": ["Predex"],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

@@ -11,6 +11,11 @@ Better Zoom Pro adds zoom presets, hold/toggle behavior, smooth transitions, con
 - **Hold or Toggle Zoom** — default C; choose whether to hold the key or press it to toggle zoom.
 - **Settings menu** — default V, with Zoom, Controls, and Advanced tabs.
 - **Quick zoom presets** — 2x, 4x, 8x, and 16x.
+- **Named profile manager** — save, load, and delete named settings profiles from the Advanced tab. Names are limited to 32 letters, numbers, underscores, or hyphens.
+- **In-game zoom HUD** — optional zoom multiplier indicator with four corner positions.
+- **Advanced wheel controls** — invert wheel direction and configure the zoom step.
+- **Config backup and recovery** — validated imports and profile loads create `config/betterzoom-backup.cfg`; the Advanced tab can recover from that backup.
+- **Accessibility** — disable smooth animation for instant zoom/reduced motion, keyboard-accessible text fields, and scrollable settings on smaller screens.
 - **Adjustable zoom range** — choose a maximum from 2x to 32x.
 - **Zoom up/down** — default = and -; configured step size is shared with mouse-wheel zoom.
 - **Reset Zoom** — default R, resets the current level to 4x (or the configured maximum if lower).
@@ -46,20 +51,25 @@ Keybindings are also listed under Minecraft Options → Controls.
 
 Use **Reset Defaults** to restore the settings and keyboard shortcuts.
 
-## Import and export profiles
+## Profiles, import/export, and recovery
 
 Open V → **Advanced**:
-1. Choose **Export** to create config/betterzoom-export.cfg.
-2. To import a profile, copy the profile file to config/betterzoom-import.cfg.
-3. Choose **Import** in the Advanced tab.
+1. Enter a profile name (letters, numbers, `_`, or `-`; up to 32 characters).
+2. Choose **Save** to create `config/betterzoom-profile-<name>.cfg`, **Load** to validate and load it, or **Delete** to remove it.
+3. Choose **Export** to create `config/betterzoom-export.cfg`. To import an external profile, copy it to `config/betterzoom-import.cfg` and choose **Import**.
+4. Before a valid profile is loaded, the current config is copied to `config/betterzoom-backup.cfg`. Use **Recover** if you need to restore that backup.
 
-The import action reads settings only; it does not change your keyboard shortcuts. Back up your config before replacing it.
+The profile manager saves zoom settings, not Minecraft keyboard shortcuts. Import and named-profile loading validate the file before applying settings; this validation is a safety check, not a guarantee that every manually edited config is semantically correct.
 
 ## Requirements
 
 - Minecraft Java Edition 1.8.9
 - Minecraft Forge 11.15.1.2318-1.8.9
 - Java 8 runtime
+
+## Version policy
+
+The mod version is intentionally pinned to **2.0.0**. Keep `BetterZoom.VERSION`, `build.gradle`, the artifact name, and release metadata at `2.0.0` unless the repository owner explicitly authorizes a version change.
 
 ## Download the built JAR
 

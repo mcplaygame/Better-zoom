@@ -1,4 +1,7 @@
 package com.predex.betterzoom;
+
+import java.io.IOException;
+
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.settings.KeyBinding;
@@ -20,11 +23,11 @@ public class GuiBetterZoom extends GuiScreen {
   drawCenteredString(fontRendererObj,"BETTER ZOOM",width/2,y+12,0xFFFFFFFF);
   drawCenteredString(fontRendererObj,"PERSONALIZE YOUR ZOOM EXPERIENCE",width/2,y+27,0xFF9DB2D1);
   Gui.drawRect(x+16,y+43,x+w-16,y+44,0xFF35445C);
-  label("Zoom strength",x+18,y+50); step(x+250,y+48,"-",mx,my); val(x+284,y+48,60,String.format("%.1fx",BetterZoom.zoomFactor),mx,my); step(x+346,y+48,"+",mx,my);
+  label("Zoom strength",x+18,y+50); step(x+250,y+48,"-",mx,my); val(x+284,y+48,60,String.format(java.util.Locale.ROOT,"%.1fx",BetterZoom.zoomFactor),mx,my); step(x+346,y+48,"+",mx,my);
   label("Smooth zoom animation",x+18,y+77); toggle(x+290,y+74,BetterZoom.smoothZoomEnabled,mx,my);
-  label("Animation speed",x+18,y+103); step(x+250,y+100,"-",mx,my); val(x+284,y+100,60,String.format("%.2f",BetterZoom.smoothSpeed),mx,my); step(x+346,y+100,"+",mx,my);
+  label("Animation speed",x+18,y+103); step(x+250,y+100,"-",mx,my); val(x+284,y+100,60,String.format(java.util.Locale.ROOT,"%.2f",BetterZoom.smoothSpeed),mx,my); step(x+346,y+100,"+",mx,my);
   label("Mouse-wheel zoom control",x+18,y+129); toggle(x+290,y+126,BetterZoom.scrollZoomEnabled,mx,my);
-  label("Zoom change per step",x+18,y+155); step(x+250,y+152,"-",mx,my); val(x+284,y+152,60,String.format("%.1f",BetterZoom.zoomStep),mx,my); step(x+346,y+152,"+",mx,my);
+  label("Zoom change per step",x+18,y+155); step(x+250,y+152,"-",mx,my); val(x+284,y+152,60,String.format(java.util.Locale.ROOT,"%.1f",BetterZoom.zoomStep),mx,my); step(x+346,y+152,"+",mx,my);
   label("Reduced mouse sensitivity",x+18,y+181); toggle(x+290,y+178,BetterZoom.reducedSensitivityEnabled,mx,my);
   label("Sensitivity while zooming",x+18,y+207); step(x+250,y+204,"-",mx,my); val(x+284,y+204,60,Math.round(BetterZoom.sensitivityMultiplier*100)+"%",mx,my); step(x+346,y+204,"+",mx,my);
   Gui.drawRect(x+16,y+232,x+w-16,y+233,0xFF35445C);
@@ -45,7 +48,7 @@ public class GuiBetterZoom extends GuiScreen {
  private void keyButton(int a,int b,String s,int mx,int my){Gui.drawRect(a,b,a+138,b+22,hit(mx,my,a,b,138,22)?0xFF304A67:0xFF202F45);Gui.drawRect(a,b,a+138,b+1,0xFFFF4FBD);drawCenteredString(fontRendererObj,s,a+69,b+7,0xFFFFFFFF);}
  private void action(int a,int b,int ww,String s,int mx,int my,boolean primary){Gui.drawRect(a,b,a+ww,b+22,hit(mx,my,a,b,ww,22)?0xFF304A67:(primary?0xFF174B50:0xFF202F45));Gui.drawRect(a,b,a+ww,b+1,primary?0xFF32D9FF:0xFFFF4FBD);drawCenteredString(fontRendererObj,s,a+ww/2,b+7,0xFFFFFFFF);}
  private String keyName(KeyBinding k,int id){if(waiting&&target==id)return "PRESS KEY...";if(k==null||k.getKeyCode()==Keyboard.KEY_NONE)return "UNBOUND";String s=Keyboard.getKeyName(k.getKeyCode());return s==null?"UNBOUND":s;}
- @Override protected void mouseClicked(int mx,int my,int button){
+ @Override protected void mouseClicked(int mx,int my,int button) throws IOException {
   if(button!=0){super.mouseClicked(mx,my,button);return;}
   if(hit(mx,my,x+250,y+48,32,22))BetterZoom.zoomFactor=Math.max(2F,BetterZoom.zoomFactor-.5F);
   else if(hit(mx,my,x+346,y+48,32,22))BetterZoom.zoomFactor=Math.min(10F,BetterZoom.zoomFactor+.5F);
@@ -67,7 +70,7 @@ public class GuiBetterZoom extends GuiScreen {
   BetterZoom.saveConfig();
  }
  private void resetDefaults(){BetterZoom.zoomFactor=4F;BetterZoom.zoomStep=.5F;BetterZoom.smoothSpeed=.22F;BetterZoom.sensitivityMultiplier=.45F;BetterZoom.smoothZoomEnabled=true;BetterZoom.scrollZoomEnabled=true;BetterZoom.reducedSensitivityEnabled=true;BetterZoom.resetKeyBindings();BetterZoom.saveConfig();}
- @Override protected void keyTyped(char c,int code){
+ @Override protected void keyTyped(char c,int code) throws IOException {
   if(waiting){if(code==Keyboard.KEY_ESCAPE){waiting=false;target=0;return;}
    if(target==1)BetterZoom.zoomKey.setKeyCode(code);else if(target==2)BetterZoom.settingsKey.setKeyCode(code);else if(target==3)BetterZoom.zoomInKey.setKeyCode(code);else if(target==4)BetterZoom.zoomOutKey.setKeyCode(code);
    KeyBinding.resetKeyBindingArrayAndHash();mc.gameSettings.saveOptions();waiting=false;target=0;return;

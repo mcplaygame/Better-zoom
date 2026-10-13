@@ -292,9 +292,14 @@ public class GuiBetterZoom extends GuiScreen {
             waitingForKey=false;waitingTarget=0;return;
         }
         if(keyCode==Keyboard.KEY_ESCAPE){BetterZoom.saveConfig();mc.displayGuiScreen(null);return;}
+        if(keyCode==Keyboard.KEY_TAB){
+            if(activeTab==2&&profileField.isFocused()){profileField.setFocused(false);searchField.setFocused(true);}
+            else if(activeTab==2&&searchField.isFocused()){searchField.setFocused(false);profileField.setFocused(true);}
+            else searchField.setFocused(!searchField.isFocused());
+            return;
+        }
         if(activeTab==2&&profileField.isFocused()){profileField.textboxKeyTyped(typedChar,keyCode);return;}
         searchField.textboxKeyTyped(typedChar,keyCode);
-        if(keyCode==Keyboard.KEY_TAB){searchField.setFocused(!searchField.isFocused());if(activeTab==2)profileField.setFocused(!searchField.isFocused());return;}
         super.keyTyped(typedChar,keyCode);
     }
 

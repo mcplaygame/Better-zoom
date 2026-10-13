@@ -4,7 +4,7 @@
 
 Better Zoom provides hold-to-zoom, smooth animation, mouse-wheel adjustment, separate zoom-up/down shortcuts, and a compact dark settings screen with cyan and magenta accents.
 
-> **Project status:** The source has been pushed to GitHub, but this revision has not yet been compiled or tested in a live Minecraft client. Please test in a separate Forge 1.8.9 profile and report any build errors or crashes.
+> **Build status:** The latest Java source revision compiled successfully with GitHub Actions, and a JAR artifact was produced. It has not yet been tested inside a live Minecraft client, so in-game behavior still needs testing.
 
 ## Features
 
@@ -49,9 +49,18 @@ Use **Reset Defaults** to restore the original settings and keybinds.
 - Minecraft Java Edition **1.8.9**
 - Minecraft Forge **11.15.1.2318-1.8.9**
 - **Java 8 JDK**
-- Matching Forge 1.8.9 MDK
 
-## Build on Windows
+## Download the built JAR
+
+1. Open the repository's [GitHub Actions](https://github.com/mcplaygame/Better-zoom/actions).
+2. Open the latest successful **Build Better Zoom** run.
+3. Under **Artifacts**, download `BetterZoom-1.2.0` and extract the ZIP.
+4. Put `BetterZoom-1.2.0.jar` into your Minecraft 1.8.9 Forge `mods` folder.
+5. Test in a separate Forge 1.8.9 profile before using it in your main game.
+
+GitHub Actions artifacts are temporary and expire after 14 days; build again from the Actions page if needed.
+
+## Build locally on Windows
 
 1. Download the matching Forge 1.8.9 MDK.
 2. Copy `gradlew`, `gradlew.bat`, and the full `gradle/wrapper/` directory from the MDK into the repository root.
@@ -64,7 +73,6 @@ Use **Reset Defaults** to restore the original settings and keybinds.
    ```
 
 5. If the build succeeds, the JAR should appear in `build/libs/`.
-6. Test it in a separate Minecraft 1.8.9 Forge profile before using it in your main game.
 
 ## Project structure
 
@@ -76,6 +84,7 @@ src/main/java/com/predex/betterzoom/
 src/main/resources/
   mcmod.info
   assets/betterzoom/lang/en_US.lang
+.github/workflows/build.yml
 build.gradle
 settings.gradle
 gradle.properties

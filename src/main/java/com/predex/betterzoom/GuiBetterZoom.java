@@ -171,8 +171,8 @@ public class GuiBetterZoom extends GuiScreen {
         } else if ("presets".equals(row.type)) {
             int[] levels = new int[] {2, 4, 8, 16};
             for (int i = 0; i < levels.length; i++) {
-                int px = bx - 18 + i * 38;
-                drawButton(px, by + 2, 35, 21, levels[i] + "x", hit(mx, my, px, by + 2, 35, 21));
+                int px = bx + i * 34;
+                drawButton(px, by + 2, 31, 21, levels[i] + "x", hit(mx, my, px, by + 2, 31, 21));
             }
         } else if ("export".equals(row.type) || "import".equals(row.type) || "defaults".equals(row.type)) {
             String label = "export".equals(row.type) ? "EXPORT" : ("import".equals(row.type) ? "IMPORT" : "RESET");
@@ -277,8 +277,8 @@ public class GuiBetterZoom extends GuiScreen {
         } else if ("presets".equals(row.type)) {
             int[] levels = new int[] {2, 4, 8, 16};
             for (int i = 0; i < levels.length; i++) {
-                int px = bx - 18 + i * 38;
-                if (hit(mouseX, mouseY, px, rowY + 2, 35, 21)) {
+                int px = bx + i * 34;
+                if (hit(mouseX, mouseY, px, rowY + 2, 31, 21)) {
                     BetterZoom.setZoom(levels[i]);
                     BetterZoom.lastMessage = "Zoom preset set to " + String.format(java.util.Locale.ROOT, "%.1fx", BetterZoom.zoomFactor);
                     break;
@@ -343,18 +343,23 @@ public class GuiBetterZoom extends GuiScreen {
 
     @Override
     public void handleMouseInput() throws IOException {
-        super.handleMouseInput();
-        int wheel = Mouse.getDWheel();
-        int contentTop = y + 101;
-        int contentBottom = y + h - 55;
-        if (wheel != 0 && Mouse.getX() >= 0 && Mouse.getY() >= 0) {
-            int mouseX = Mouse.getX() * width / mc.displayWidth;
-            int mouseY = height - Mouse.getY() * height / mc.displayHeight - 1;
-            if (hit(mouseX, mouseY, x + 12, contentTop, w - 24, Math.max(1, contentBottom - contentTop))) {
+        while (Mouse.next()) {
+            int mouseX = Mouse.getEventX() * width / mc.displayWidth;
+            int mouseY = height - Mouse.getEventY() * height / mc.displayHeight - 1;
+            int wheel = Mouse.getEventDWheel();
+            int contentTop = y + 101;
+            int contentBottom = y + h - 55;
+            if (wheel != 0 && hit(mouseX, mouseY, x + 12, contentTop, w - 24, Math.max(1, contentBottom - contentTop))) {
                 scrollOffset += wheel > 0 ? -ROW_HEIGHT : ROW_HEIGHT;
                 int maxScroll = Math.max(0, rowsForTab().size() * ROW_HEIGHT - (contentBottom - contentTop));
                 if (scrollOffset < 0) scrollOffset = 0;
                 if (scrollOffset > maxScroll) scrollOffset = maxScroll;
+            }
+            int button = Mouse.getEventButton();
+            if (button >= 0 && Mouse.getEventButtonState()) {
+                mouseClicked(mouseX, mouseY, button);
+            } else if (button >= 0) {
+                mouseReleased(mouseX, mouseY, button);
             }
         }
     }

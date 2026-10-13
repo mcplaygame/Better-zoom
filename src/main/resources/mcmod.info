@@ -2,7 +2,7 @@
   {
     "modid": "betterzoom",
     "name": "Better Zoom",
-    "description": "A lightweight configurable zoom mod for Minecraft 1.8.9 Forge.",
+    "description": "Customizable zoom, smooth animation, mouse wheel controls, and an easy settings menu for Minecraft 1.8.9.",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "url": "https://github.com/mcplaygame/Better-zoom",

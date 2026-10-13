@@ -1,5 +1,6 @@
-key.categories.betterzoom=Better Zoom
-key.betterzoom.zoom=Hold to Zoom
+key.categories.betterzoom=Better Zoom Pro
+key.betterzoom.zoom=Zoom (Hold / Toggle)
 key.betterzoom.settings=Open Better Zoom Settings
 key.betterzoom.zoom_in=Increase Zoom Level
 key.betterzoom.zoom_out=Decrease Zoom Level
+key.betterzoom.reset_zoom=Reset Zoom Level

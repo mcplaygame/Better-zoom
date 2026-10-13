@@ -22,14 +22,13 @@ public class ZoomHandler {
             return;
         }
 
-        // Dedicated zoom-level hotkeys work independently of the mouse wheel.
-        // Only adjust the level while in-game and with no GUI open.
+        // These shortcuts adjust zoom strength even when the zoom key is not held.
         if (mc.currentScreen == null) {
             if (BetterZoom.zoomInKey != null && BetterZoom.zoomInKey.isPressed()) {
-                changeZoomFactor(0.5F);
+                changeZoomFactor(BetterZoom.zoomStep);
             }
             if (BetterZoom.zoomOutKey != null && BetterZoom.zoomOutKey.isPressed()) {
-                changeZoomFactor(-0.5F);
+                changeZoomFactor(-BetterZoom.zoomStep);
             }
         }
 
@@ -57,7 +56,7 @@ public class ZoomHandler {
     public void onMouse(MouseEvent event) {
         if (!BetterZoom.scrollZoomEnabled || zoomProgress <= 0.0F || event.dwheel == 0) return;
 
-        changeZoomFactor(event.dwheel > 0 ? 0.5F : -0.5F);
+        changeZoomFactor(event.dwheel > 0 ? BetterZoom.zoomStep : -BetterZoom.zoomStep);
         event.setCanceled(true);
     }
 
@@ -65,13 +64,14 @@ public class ZoomHandler {
         float next = BetterZoom.zoomFactor + amount;
         if (next < 2.0F) next = 2.0F;
         if (next > 10.0F) next = 10.0F;
-        if (next != BetterZoom.zoomFactor) {
+        if (Math.abs(next - BetterZoom.zoomFactor) > 0.001F) {
             BetterZoom.zoomFactor = next;
             BetterZoom.saveConfig();
         }
     }
 
     private void updateSensitivity(boolean zoomIsActive) {
+        if (mc.gameSettings == null) return;
         if (zoomIsActive) {
             if (!sensitivityApplied) {
                 originalSensitivity = mc.gameSettings.mouseSensitivity;

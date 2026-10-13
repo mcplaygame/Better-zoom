@@ -49,32 +49,15 @@ public class GuiBetterZoom extends GuiScreen {
 
     private List<SettingRow> rowsForTab() {
         List<SettingRow> rows = new ArrayList<SettingRow>();
-        rows.add(new SettingRow("zoom","Current zoom level","Current magnification. Use quick presets or + / −.","step",2F,BetterZoom.maxZoomFactor,0.5F));
-        rows.add(new SettingRow("max","Maximum zoom limit","Range: 2x to 32x.","step",2F,32F,2F));
-        rows.add(new SettingRow("presets","Quick zoom presets","Apply 2x, 4x, 8x or 16x.","presets",0,0,0));
-        rows.add(new SettingRow("smooth","Smooth zoom animation","Turn animation off for instant zoom.","toggle",0,0,0));
-        rows.add(new SettingRow("speed","Animation speed","Higher values make transitions faster.","step",0.05F,1F,0.05F));
-        rows.add(new SettingRow("scroll","Mouse-wheel zoom","Allow the wheel to adjust zoom while zoom is active.","toggle",0,0,0));
-        rows.add(new SettingRow("step","Zoom change per step","Wheel and zoom-up/down key step size.","step",0.1F,4F,0.1F));
-        rows.add(new SettingRow("hold","Zoom key behavior","Choose hold or toggle mode.","togglemode",0,0,0));
-        rows.add(new SettingRow("keyzoom","Zoom key","Click and press a key. Backspace unbinds; Escape cancels.","key1",0,0,0));
-        rows.add(new SettingRow("keysettings","Open settings","Shortcut to open settings.","key2",0,0,0));
-        rows.add(new SettingRow("keyin","Increase zoom","Increase magnification by one step.","key3",0,0,0));
-        rows.add(new SettingRow("keyout","Decrease zoom","Decrease magnification by one step.","key4",0,0,0));
-        rows.add(new SettingRow("keyreset","Reset zoom level","Return to default zoom level.","key5",0,0,0));
-        rows.add(new SettingRow("invert","Invert wheel direction","Reverse zoom wheel direction.","toggle",0,0,0));
-        rows.add(new SettingRow("sensitivity","Reduced mouse sensitivity","Reduce sensitivity while zooming.","toggle",0,0,0));
-        rows.add(new SettingRow("multiplier","Sensitivity multiplier","Lower values slow camera movement while zoomed.","step",0.05F,1F,0.05F));
-        rows.add(new SettingRow("hud","In-game zoom indicator","Show zoom level while zoom is active.","toggle",0,0,0));
-        rows.add(new SettingRow("corner","HUD position","Cycle through four screen corners.","corner",0,3,1));
-        rows.add(new SettingRow("profileName","Profile name","Letters, numbers, underscore or hyphen; up to 32 characters.","profileName",0,0,0));
-        rows.add(new SettingRow("profileSave","Save named profile","Save current settings to a profile file.","profileSave",0,0,0));
-        rows.add(new SettingRow("profileLoad","Load named profile","Load a saved profile.","profileLoad",0,0,0));
-        rows.add(new SettingRow("profileDelete","Delete named profile","Delete the named profile file.","profileDelete",0,0,0));
-        rows.add(new SettingRow("export","Export current profile","Write settings to config/betterzoom-export.cfg.","export",0,0,0));
-        rows.add(new SettingRow("import","Import profile","Import config/betterzoom-import.cfg.","import",0,0,0));
-        rows.add(new SettingRow("recover","Recover backup","Restore config/betterzoom-backup.cfg.","recover",0,0,0));
-        rows.add(new SettingRow("defaults","Restore all defaults","Reset settings and keyboard shortcuts.","defaults",0,0,0));
+        rows.add(new SettingRow("zoom","Zoom level","Adjust the current zoom magnification.","step",2F,BetterZoom.maxZoomFactor,0.5F));
+        rows.add(new SettingRow("max","Maximum zoom","Set the highest allowed zoom, from 2x to 32x.","step",2F,32F,2F));
+        rows.add(new SettingRow("presets","Quick presets","Choose a common zoom level.","presets",0,0,0));
+        rows.add(new SettingRow("smooth","Smooth zoom","Enable or disable animated zoom transitions.","toggle",0,0,0));
+        rows.add(new SettingRow("speed","Animation speed","Adjust how quickly zoom transitions complete.","step",0.05F,1F,0.05F));
+        rows.add(new SettingRow("scroll","Mouse wheel","Allow mouse-wheel zoom adjustment while zooming.","toggle",0,0,0));
+        rows.add(new SettingRow("step","Zoom step","Choose how much each wheel step changes zoom.","step",0.1F,4F,0.1F));
+        rows.add(new SettingRow("invert","Invert wheel","Reverse the mouse-wheel zoom direction.","toggle",0,0,0));
+        rows.add(new SettingRow("hud","Zoom indicator","Show or hide the in-game zoom level indicator.","toggle",0,0,0));
         return rows;
     }
 

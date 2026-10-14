@@ -1,6 +1,8 @@
 package com.predex.betterzoom;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -10,12 +12,12 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 public class ZoomHandler {
     private final Minecraft mc = Minecraft.getMinecraft();
     private float zoomProgress = 0.0F;
+    private float currentZoomLevel = 1.0F;
     private float originalSensitivity = 0.5F;
     private float lastAppliedSensitivity = -1.0F;
     private boolean sensitivityApplied = false;
+    private boolean optifineNoticeSent = false;
     private long lastTickNanos = System.nanoTime();
-    private float animatedZoomFactor = BetterZoom.DEFAULT_ZOOM;
-    private boolean zoomInitialized = false;
 
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
@@ -24,52 +26,73 @@ public class ZoomHandler {
         float deltaSeconds = (now - lastTickNanos) / 1000000000.0F;
         lastTickNanos = now;
         deltaSeconds = Math.max(0.001F, Math.min(0.1F, deltaSeconds));
-        if (!zoomInitialized) {
-            animatedZoomFactor = BetterZoom.zoomFactor;
-            zoomInitialized = true;
-        }
+
         if (mc.thePlayer == null || mc.theWorld == null) {
             zoomProgress = 0.0F;
+            currentZoomLevel = 1.0F;
             BetterZoom.zoomToggleState = false;
             restoreSensitivity();
             return;
         }
+
+        if (BetterZoom.optifineDetected && !optifineNoticeSent) {
+            mc.thePlayer.addChatMessage(new ChatComponentText(
+                EnumChatFormatting.GOLD + "[Better Zoom] " + EnumChatFormatting.YELLOW
+                + "OptiFine detected. Better Zoom uses B by default."));
+            mc.thePlayer.addChatMessage(new ChatComponentText(
+                EnumChatFormatting.GOLD + "[Better Zoom] " + EnumChatFormatting.WHITE
+                + "To avoid double zoom, disable OptiFine Zoom (usually C) in Options > Controls."));
+            optifineNoticeSent = true;
+        }
+
         if (mc.currentScreen == null) {
             if (BetterZoom.resetZoomKey != null && BetterZoom.resetZoomKey.isPressed()) BetterZoom.resetZoomLevel();
-            if (BetterZoom.zoomInKey != null && BetterZoom.zoomInKey.isPressed()) BetterZoom.setZoom(BetterZoom.zoomFactor + BetterZoom.zoomStep);
-            if (BetterZoom.zoomOutKey != null && BetterZoom.zoomOutKey.isPressed()) BetterZoom.setZoom(BetterZoom.zoomFactor - BetterZoom.zoomStep);
+            if (BetterZoom.zoomInKey != null && BetterZoom.zoomInKey.isPressed()) {
+                BetterZoom.setZoom(BetterZoom.zoomFactor + BetterZoom.zoomStep);
+                BetterZoom.saveConfig();
+            }
+            if (BetterZoom.zoomOutKey != null && BetterZoom.zoomOutKey.isPressed()) {
+                BetterZoom.setZoom(BetterZoom.zoomFactor - BetterZoom.zoomStep);
+                BetterZoom.saveConfig();
+            }
         }
+
         boolean keyRequestsZoom = BetterZoom.holdToZoomEnabled
             ? BetterZoom.zoomKey != null && BetterZoom.zoomKey.isKeyDown()
             : BetterZoom.zoomToggleState;
         boolean zoomRequested = mc.currentScreen == null && keyRequestsZoom;
+
         if (BetterZoom.smoothZoomEnabled) {
-            // Time-based exponential easing keeps the transition consistent at different frame rates.
-            float response = 4.0F + BetterZoom.smoothSpeed * 14.0F;
+            // Directly ease the actual magnification toward its target, rather than mixing
+            // two separate progress values. This gives a predictable, responsive transition.
+            float response = 8.0F + BetterZoom.smoothSpeed * 28.0F;
             float alpha = (float) (1.0D - Math.exp(-response * deltaSeconds));
-            float targetProgress = zoomRequested ? 1.0F : 0.0F;
-            zoomProgress += (targetProgress - zoomProgress) * alpha;
-            animatedZoomFactor += (BetterZoom.zoomFactor - animatedZoomFactor) * alpha;
+            float targetZoom = zoomRequested ? BetterZoom.zoomFactor : 1.0F;
+            currentZoomLevel += (targetZoom - currentZoomLevel) * alpha;
+            zoomProgress += ((zoomRequested ? 1.0F : 0.0F) - zoomProgress) * alpha;
+            if (Math.abs(targetZoom - currentZoomLevel) < 0.005F) currentZoomLevel = targetZoom;
+            if (Math.abs((zoomRequested ? 1.0F : 0.0F) - zoomProgress) < 0.005F)
+                zoomProgress = zoomRequested ? 1.0F : 0.0F;
         } else {
+            currentZoomLevel = zoomRequested ? BetterZoom.zoomFactor : 1.0F;
             zoomProgress = zoomRequested ? 1.0F : 0.0F;
-            animatedZoomFactor = BetterZoom.zoomFactor;
         }
+
+        currentZoomLevel = Math.max(1.0F, Math.min(BetterZoom.maxZoomFactor, currentZoomLevel));
         zoomProgress = Math.max(0.0F, Math.min(1.0F, zoomProgress));
-        animatedZoomFactor = Math.max(BetterZoom.MIN_ZOOM, Math.min(BetterZoom.maxZoomFactor, animatedZoomFactor));
-        updateSensitivity(zoomProgress > 0.0F && BetterZoom.reducedSensitivityEnabled);
+        updateSensitivity(currentZoomLevel > 1.02F && BetterZoom.reducedSensitivityEnabled);
     }
 
     @SubscribeEvent
     public void onFov(EntityViewRenderEvent.FOVModifier event) {
-        if (zoomProgress <= 0.0F) return;
+        if (currentZoomLevel <= 1.001F) return;
         BetterZoom.clampZoom();
-        float multiplier = 1.0F + ((animatedZoomFactor - 1.0F) * zoomProgress);
-        event.setFOV(event.getFOV() / multiplier);
+        event.setFOV(event.getFOV() / currentZoomLevel);
     }
 
     @SubscribeEvent
     public void onMouse(MouseEvent event) {
-        if (!BetterZoom.scrollZoomEnabled || zoomProgress <= 0.0F || event.dwheel == 0 || mc.currentScreen != null) return;
+        if (!BetterZoom.scrollZoomEnabled || currentZoomLevel <= 1.02F || event.dwheel == 0 || mc.currentScreen != null) return;
         boolean wheelUp = event.dwheel > 0;
         if (BetterZoom.invertWheelEnabled) wheelUp = !wheelUp;
         BetterZoom.setZoom(BetterZoom.zoomFactor + (wheelUp ? BetterZoom.zoomStep : -BetterZoom.zoomStep));
@@ -78,9 +101,9 @@ public class ZoomHandler {
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
-        if (event.type != RenderGameOverlayEvent.ElementType.ALL || !BetterZoom.showZoomIndicator || zoomProgress <= 0.02F) return;
+        if (event.type != RenderGameOverlayEvent.ElementType.ALL || !BetterZoom.showZoomIndicator || currentZoomLevel <= 1.02F) return;
         if (mc.fontRendererObj == null) return;
-        String label = String.format(java.util.Locale.ROOT, "ZOOM %.1fx", 1.0F + (animatedZoomFactor - 1.0F) * zoomProgress);
+        String label = String.format(java.util.Locale.ROOT, "ZOOM %.1fx", currentZoomLevel);
         int padding = 6;
         int boxWidth = mc.fontRendererObj.getStringWidth(label) + padding * 2;
         int boxHeight = 18;
@@ -102,7 +125,6 @@ public class ZoomHandler {
                 sensitivityApplied = true;
             } else if (lastAppliedSensitivity >= 0.0F
                 && Math.abs(mc.gameSettings.mouseSensitivity - lastAppliedSensitivity) > 0.0001F) {
-                // Respect external changes made while zoomed, then apply the zoom multiplier again.
                 originalSensitivity = BetterZoom.sensitivityMultiplier > 0.0F
                     ? Math.min(1.0F, mc.gameSettings.mouseSensitivity / BetterZoom.sensitivityMultiplier)
                     : mc.gameSettings.mouseSensitivity;

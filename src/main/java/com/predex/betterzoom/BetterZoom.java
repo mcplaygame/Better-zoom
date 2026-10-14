@@ -41,6 +41,7 @@ public class BetterZoom {
     public static int indicatorCorner = 1; // 0=top-left, 1=top-right, 2=bottom-left, 3=bottom-right
     public static String lastMessage = "";
     public static KeyBinding zoomKey, settingsKey, zoomInKey, zoomOutKey, resetZoomKey;
+    public static boolean optifineDetected = false;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -54,11 +55,23 @@ public class BetterZoom {
         }
         CONFIG = new Configuration(configFile);
         loadConfig();
+        optifineDetected = detectOptiFine();
+    }
+
+    private static boolean detectOptiFine() {
+        try {
+            Class.forName("net.optifine.Config", false, BetterZoom.class.getClassLoader());
+            return true;
+        } catch (ClassNotFoundException ex) {
+            try { Class.forName("net.optifine.Config"); return true; }
+            catch (ClassNotFoundException ignored) { return false; }
+            catch (LinkageError ignored) { return false; }
+        } catch (LinkageError ex) { return false; }
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        zoomKey = new KeyBinding("key.betterzoom.zoom", Keyboard.KEY_C, "key.categories.betterzoom");
+        zoomKey = new KeyBinding("key.betterzoom.zoom", Keyboard.KEY_B, "key.categories.betterzoom");
         settingsKey = new KeyBinding("key.betterzoom.settings", Keyboard.KEY_V, "key.categories.betterzoom");
         zoomInKey = new KeyBinding("key.betterzoom.zoom_in", Keyboard.KEY_EQUALS, "key.categories.betterzoom");
         zoomOutKey = new KeyBinding("key.betterzoom.zoom_out", Keyboard.KEY_MINUS, "key.categories.betterzoom");
@@ -131,18 +144,19 @@ public class BetterZoom {
     }
 
     public static void setZoom(float value) {
+        // Avoid disk writes on every mouse-wheel notch; they can cause visible stutter.
         zoomFactor = clamp(value, MIN_ZOOM, maxZoomFactor);
-        saveConfig();
     }
 
     public static void resetZoomLevel() {
         setZoom(Math.min(DEFAULT_ZOOM, maxZoomFactor));
+        saveConfig();
         lastMessage = "Zoom reset to " + String.format(Locale.ROOT, "%.1fx", zoomFactor);
     }
 
     public static void resetKeyBindings() {
         if (zoomKey == null || settingsKey == null || zoomInKey == null || zoomOutKey == null || resetZoomKey == null) return;
-        zoomKey.setKeyCode(Keyboard.KEY_C); settingsKey.setKeyCode(Keyboard.KEY_V);
+        zoomKey.setKeyCode(Keyboard.KEY_B); settingsKey.setKeyCode(Keyboard.KEY_V);
         zoomInKey.setKeyCode(Keyboard.KEY_EQUALS); zoomOutKey.setKeyCode(Keyboard.KEY_MINUS);
         resetZoomKey.setKeyCode(Keyboard.KEY_R);
         KeyBinding.resetKeyBindingArrayAndHash();
